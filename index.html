@@ -85,159 +85,12 @@
         #restartBtn:hover {
             background: #45b8b0;
         }
-        
-        #nameInput {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.95);
-            color: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 200;
-        }
-        
-        #nameInput h2 {
-            font-size: 32px;
-            margin-bottom: 20px;
-            color: #4ecdc4;
-        }
-        
-        #nameInput input {
-            padding: 15px 20px;
-            font-size: 20px;
-            border: 2px solid #4ecdc4;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            width: 300px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        #nameInput input:focus {
-            outline: none;
-            border-color: #45b8b0;
-            background: rgba(255, 255, 255, 0.15);
-        }
-        
-        #nameInput button {
-            background: #4ecdc4;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        
-        #nameInput button:hover {
-            background: #45b8b0;
-        }
-        
-        #leaderboard {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            min-width: 250px;
-            max-height: 400px;
-            overflow-y: auto;
-            z-index: 50;
-        }
-        
-        #leaderboard h3 {
-            font-size: 24px;
-            margin-bottom: 15px;
-            color: #4ecdc4;
-            text-align: center;
-            border-bottom: 2px solid #4ecdc4;
-            padding-bottom: 10px;
-        }
-        
-        #clearLeaderboardBtn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            font-size: 14px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s;
-            width: 100%;
-            margin-top: 10px;
-        }
-        
-        #clearLeaderboardBtn:hover {
-            background: #ff5252;
-        }
-        
-        .leaderboard-entry {
-            padding: 10px;
-            margin: 5px 0;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .leaderboard-entry.rank-1 {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
-            border-left: 4px solid #FFD700;
-        }
-        
-        .leaderboard-entry.rank-2 {
-            background: linear-gradient(90deg, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1));
-            border-left: 4px solid #C0C0C0;
-        }
-        
-        .leaderboard-entry.rank-3 {
-            background: linear-gradient(90deg, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1));
-            border-left: 4px solid #CD7F32;
-        }
-        
-        .leaderboard-name {
-            font-weight: bold;
-            flex: 1;
-        }
-        
-        .leaderboard-score {
-            color: #4ecdc4;
-            font-size: 18px;
-        }
-        
-        #playerName {
-            font-size: 18px;
-            color: #FFD700;
-            margin-bottom: 5px;
-        }
     </style>
 </head>
 <body>
-    <div id="nameInput">
-        <h2>Enter Your Name</h2>
-        <input type="text" id="playerNameInput" placeholder="Your name..." maxlength="20" autofocus>
-        <br>
-        <button id="startGameBtn">Start Game</button>
-    </div>
-    
-    <div id="leaderboard">
-        <h3>🏆 Leaderboard</h3>
-        <div id="leaderboardList"></div>
-        <button id="clearLeaderboardBtn">Clear Leaderboard</button>
-    </div>
-    
     <div id="gameContainer">
         <canvas id="gameCanvas" width="600" height="800"></canvas>
         <div id="gameInfo">
-            <div id="playerName"></div>
             <div>Score: <span id="score">0</span></div>
             <div id="instructions">Use ← → Arrow Keys to Move</div>
         </div>
@@ -256,110 +109,9 @@
         const gameOverElement = document.getElementById('gameOver');
         const finalScoreElement = document.getElementById('finalScore');
         const restartBtn = document.getElementById('restartBtn');
-        const nameInputElement = document.getElementById('nameInput');
-        const playerNameInput = document.getElementById('playerNameInput');
-        const startGameBtn = document.getElementById('startGameBtn');
-        const playerNameDisplay = document.getElementById('playerName');
-        const leaderboardList = document.getElementById('leaderboardList');
-        const clearLeaderboardBtn = document.getElementById('clearLeaderboardBtn');
-        
-        // Player name
-        let playerName = '';
-        
-        // Leaderboard functions
-        function getLeaderboard() {
-            const leaderboard = localStorage.getItem('subwaySurfersLeaderboard');
-            return leaderboard ? JSON.parse(leaderboard) : [];
-        }
-        
-        function saveLeaderboard(leaderboard) {
-            localStorage.setItem('subwaySurfersLeaderboard', JSON.stringify(leaderboard));
-        }
-        
-        function addScore(name, score) {
-            const leaderboard = getLeaderboard();
-            
-            // Check if player with same name already exists
-            const existingIndex = leaderboard.findIndex(entry => entry.name.toLowerCase() === name.toLowerCase());
-            
-            if (existingIndex !== -1) {
-                // Update existing entry if new score is higher, or always update to latest score
-                if (score > leaderboard[existingIndex].score) {
-                    leaderboard[existingIndex].score = score;
-                    leaderboard[existingIndex].date = new Date().toISOString();
-                }
-            } else {
-                // Add new entry
-                leaderboard.push({ name: name, score: score, date: new Date().toISOString() });
-            }
-            
-            // Sort by score (descending) and keep top 10
-            leaderboard.sort((a, b) => b.score - a.score);
-            const topScores = leaderboard.slice(0, 10);
-            saveLeaderboard(topScores);
-            return topScores;
-        }
-        
-        function clearLeaderboard() {
-            if (confirm('Are you sure you want to clear the leaderboard? This cannot be undone.')) {
-                saveLeaderboard([]);
-                displayLeaderboard();
-            }
-        }
-        
-        function displayLeaderboard() {
-            const leaderboard = getLeaderboard();
-            leaderboardList.innerHTML = '';
-            
-            if (leaderboard.length === 0) {
-                leaderboardList.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">No scores yet!</p>';
-                return;
-            }
-            
-            leaderboard.forEach((entry, index) => {
-                const entryDiv = document.createElement('div');
-                entryDiv.className = `leaderboard-entry rank-${index + 1}`;
-                
-                const nameSpan = document.createElement('span');
-                nameSpan.className = 'leaderboard-name';
-                nameSpan.textContent = `${index + 1}. ${entry.name}`;
-                
-                const scoreSpan = document.createElement('span');
-                scoreSpan.className = 'leaderboard-score';
-                scoreSpan.textContent = Math.floor(entry.score / 10);
-                
-                entryDiv.appendChild(nameSpan);
-                entryDiv.appendChild(scoreSpan);
-                leaderboardList.appendChild(entryDiv);
-            });
-        }
-        
-        // Name input handling
-        startGameBtn.addEventListener('click', () => {
-            const name = playerNameInput.value.trim();
-            if (name) {
-                playerName = name;
-                playerNameDisplay.textContent = `Player: ${playerName}`;
-                nameInputElement.style.display = 'none';
-                gameRunning = true;
-            } else {
-                alert('Please enter your name!');
-            }
-        });
-        
-        playerNameInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                startGameBtn.click();
-            }
-        });
-        
-        // Clear leaderboard button
-        clearLeaderboardBtn.addEventListener('click', clearLeaderboard);
-        
-        // Initialize - don't start game until name is entered
-        let gameRunning = false;
         
         // Game state
+        let gameRunning = true;
         let score = 0;
         let gameSpeed = 2;
         let lastObstacleTime = 0;
@@ -472,15 +224,7 @@
             obstacles.forEach(obstacle => {
                 if (checkCollision(player, obstacle)) {
                     gameRunning = false;
-                    const finalScore = Math.floor(score / 10);
-                    finalScoreElement.textContent = finalScore;
-                    
-                    // Save score to leaderboard
-                    if (playerName) {
-                        addScore(playerName, score);
-                        displayLeaderboard();
-                    }
-                    
+                    finalScoreElement.textContent = score;
                     gameOverElement.style.display = 'block';
                 }
             });
@@ -589,7 +333,6 @@
             gameRunning = true;
             score = 0;
             gameSpeed = 2;
-            obstacleSpawnInterval = 2000;
             lastObstacleTime = Date.now();
             player.lane = 1;
             player.x = canvas.width / 2 - 25;
@@ -598,10 +341,7 @@
             gameOverElement.style.display = 'none';
         });
         
-        // Initialize leaderboard display
-        displayLeaderboard();
-        
-        // Start game loop (game won't run until name is entered)
+        // Start game
         lastObstacleTime = Date.now();
         gameLoop();
     </script>
