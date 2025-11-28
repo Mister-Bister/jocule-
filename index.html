@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subway Surfers - Simple Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+        }
+        
+        #gameContainer {
+            text-align: center;
+        }
+        
+        canvas {
+            border: 3px solid #fff;
+            border-radius: 10px;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #98D8C8 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        #gameInfo {
+            margin-top: 20px;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        #instructions {
+            margin-top: 10px;
+            color: white;
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            display: none;
+            z-index: 100;
+        }
+        
+        #gameOver h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #ff6b6b;
+        }
+        
+        #gameOver p {
+            font-size: 24px;
+            margin-bottom: 30px;
+        }
+        
+        #restartBtn {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        #restartBtn:hover {
+            background: #45b8b0;
+        }
+        
+        #nameInput {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 200;
+        }
+        
+        #nameInput h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #4ecdc4;
+        }
+        
+        #nameInput input {
+            padding: 15px 20px;
+            font-size: 20px;
+            border: 2px solid #4ecdc4;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            width: 300px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        #nameInput input:focus {
+            outline: none;
+            border-color: #45b8b0;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        #nameInput button {
+            background: #4ecdc4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        #nameInput button:hover {
+            background: #45b8b0;
+        }
+        
+        #leaderboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            min-width: 250px;
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 50;
+        }
+        
+        #leaderboard h3 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #4ecdc4;
+            text-align: center;
+            border-bottom: 2px solid #4ecdc4;
+            padding-bottom: 10px;
+        }
+        
+        .leaderboard-entry {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .leaderboard-entry.rank-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+            border-left: 4px solid #FFD700;
+        }
+        
+        .leaderboard-entry.rank-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1));
+            border-left: 4px solid #C0C0C0;
+        }
+        
+        .leaderboard-entry.rank-3 {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1));
+            border-left: 4px solid #CD7F32;
+        }
+        
+        .leaderboard-name {
+            font-weight: bold;
+            flex: 1;
+        }
+        
+        .leaderboard-score {
+            color: #4ecdc4;
+            font-size: 18px;
+        }
+        
+        #playerName {
+            font-size: 18px;
+            color: #FFD700;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="nameInput">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="playerNameInput" placeholder="Your name..." maxlength="20" autofocus>
+        <br>
+        <button id="startGameBtn">Start Game</button>
+    </div>
+    
+    <div id="leaderboard">
+        <h3>🏆 Leaderboard</h3>
+        <div id="leaderboardList"></div>
+    </div>
+    
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="600" height="800"></canvas>
+        <div id="gameInfo">
+            <div id="playerName"></div>
+            <div>Score: <span id="score">0</span></div>
+            <div id="instructions">Use ← → Arrow Keys to Move</div>
+        </div>
+    </div>
+    
+    <div id="gameOver">
+        <h2>Game Over!</h2>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <button id="restartBtn">Play Again</button>
+    </div>
+    
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+        const gameOverElement = document.getElementById('gameOver');
+        const finalScoreElement = document.getElementById('finalScore');
+        const restartBtn = document.getElementById('restartBtn');
+        const nameInputElement = document.getElementById('nameInput');
+        const playerNameInput = document.getElementById('playerNameInput');
+        const startGameBtn = document.getElementById('startGameBtn');
+        const playerNameDisplay = document.getElementById('playerName');
+        const leaderboardList = document.getElementById('leaderboardList');
+        
+        // Player name
+        let playerName = '';
+        
+        // Leaderboard functions
+        function getLeaderboard() {
+            const leaderboard = localStorage.getItem('subwaySurfersLeaderboard');
+            return leaderboard ? JSON.parse(leaderboard) : [];
+        }
+        
+        function saveLeaderboard(leaderboard) {
+            localStorage.setItem('subwaySurfersLeaderboard', JSON.stringify(leaderboard));
+        }
+        
+        function addScore(name, score) {
+            const leaderboard = getLeaderboard();
+            leaderboard.push({ name: name, score: score, date: new Date().toISOString() });
+            // Sort by score (descending) and keep top 10
+            leaderboard.sort((a, b) => b.score - a.score);
+            const topScores = leaderboard.slice(0, 10);
+            saveLeaderboard(topScores);
+            return topScores;
+        }
+        
+        function displayLeaderboard() {
+            const leaderboard = getLeaderboard();
+            leaderboardList.innerHTML = '';
+            
+            if (leaderboard.length === 0) {
+                leaderboardList.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">No scores yet!</p>';
+                return;
+            }
+            
+            leaderboard.forEach((entry, index) => {
+                const entryDiv = document.createElement('div');
+                entryDiv.className = `leaderboard-entry rank-${index + 1}`;
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.className = 'leaderboard-name';
+                nameSpan.textContent = `${index + 1}. ${entry.name}`;
+                
+                const scoreSpan = document.createElement('span');
+                scoreSpan.className = 'leaderboard-score';
+                scoreSpan.textContent = Math.floor(entry.score / 10);
+                
+                entryDiv.appendChild(nameSpan);
+                entryDiv.appendChild(scoreSpan);
+                leaderboardList.appendChild(entryDiv);
+            });
+        }
+        
+        // Name input handling
+        startGameBtn.addEventListener('click', () => {
+            const name = playerNameInput.value.trim();
+            if (name) {
+                playerName = name;
+                playerNameDisplay.textContent = `Player: ${playerName}`;
+                nameInputElement.style.display = 'none';
+                gameRunning = true;
+            } else {
+                alert('Please enter your name!');
+            }
+        });
+        
+        playerNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                startGameBtn.click();
+            }
+        });
+        
+        // Initialize - don't start game until name is entered
+        let gameRunning = false;
+        
+        // Game state
+        let score = 0;
+        let gameSpeed = 2;
+        let lastObstacleTime = 0;
+        let obstacleSpawnInterval = 2000; // Spawn obstacle every 2 seconds (in milliseconds)
+        
+        // Player
+        const player = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 150,
+            width: 50,
+            height: 80,
+            lane: 1, // 0 = left, 1 = center, 2 = right
+            color: '#FFD700',
+            targetX: canvas.width / 2 - 25
+        };
+        
+        const lanes = [
+            canvas.width / 4 - 25,
+            canvas.width / 2 - 25,
+            (canvas.width * 3) / 4 - 25
+        ];
+        
+        // Obstacles
+        let obstacles = [];
+        const obstacleWidth = 50;
+        const obstacleHeight = 80;
+        
+        // Tracks
+        const trackLines = [];
+        for (let i = 0; i < 20; i++) {
+            trackLines.push({
+                y: i * 40,
+                opacity: 0.3
+            });
+        }
+        
+        // Input handling
+        const keys = {};
+        
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            if (e.key === 'ArrowLeft' && player.lane > 0) {
+                player.lane--;
+                player.targetX = lanes[player.lane];
+            }
+            if (e.key === 'ArrowRight' && player.lane < 2) {
+                player.lane++;
+                player.targetX = lanes[player.lane];
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        // Create obstacles
+        function createObstacle() {
+            const lane = Math.floor(Math.random() * 3);
+            obstacles.push({
+                x: lanes[lane],
+                y: -obstacleHeight,
+                width: obstacleWidth,
+                height: obstacleHeight,
+                lane: lane,
+                color: '#FF4444'
+            });
+        }
+        
+        // Collision detection
+        function checkCollision(rect1, rect2) {
+            return rect1.x < rect2.x + rect2.width &&
+                   rect1.x + rect1.width > rect2.x &&
+                   rect1.y < rect2.y + rect2.height &&
+                   rect1.y + rect1.height > rect2.y;
+        }
+        
+        // Update game
+        function update() {
+            if (!gameRunning) return;
+            
+            // Update player position (smooth movement)
+            const dx = player.targetX - player.x;
+            player.x += dx * 0.15;
+            
+            // Update track lines
+            trackLines.forEach(line => {
+                line.y += gameSpeed;
+                if (line.y > canvas.height) {
+                    line.y = -40;
+                }
+            });
+            
+            // Update obstacles
+            obstacles.forEach(obstacle => {
+                obstacle.y += gameSpeed;
+            });
+            
+            // Remove off-screen obstacles
+            obstacles = obstacles.filter(obstacle => obstacle.y < canvas.height);
+            
+            // Create new obstacles with time-based spawning (much less frequent)
+            const currentTime = Date.now();
+            if (currentTime - lastObstacleTime > obstacleSpawnInterval) {
+                createObstacle();
+                lastObstacleTime = currentTime;
+            }
+            
+            // Check collisions
+            obstacles.forEach(obstacle => {
+                if (checkCollision(player, obstacle)) {
+                    gameRunning = false;
+                    const finalScore = Math.floor(score / 10);
+                    finalScoreElement.textContent = finalScore;
+                    
+                    // Save score to leaderboard
+                    if (playerName) {
+                        addScore(playerName, score);
+                        displayLeaderboard();
+                    }
+                    
+                    gameOverElement.style.display = 'block';
+                }
+            });
+            
+            // Update score
+            score += 1;
+            scoreElement.textContent = Math.floor(score / 10);
+            
+            // Increase difficulty (slightly increase spawn rate over time)
+            if (score % 1000 === 0) {
+                gameSpeed += 0.1;
+                // Gradually decrease spawn interval (but not too much)
+                if (obstacleSpawnInterval > 1200) {
+                    obstacleSpawnInterval = Math.max(1200, obstacleSpawnInterval - 50);
+                }
+            }
+        }
+        
+        // Draw functions
+        function drawPlayer() {
+            ctx.save();
+            ctx.fillStyle = player.color;
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 10;
+            
+            // Draw player body
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+            
+            // Draw player details
+            ctx.fillStyle = '#FFA500';
+            ctx.fillRect(player.x + 10, player.y + 10, 30, 20); // Head
+            
+            ctx.fillStyle = '#FF6347';
+            ctx.fillRect(player.x + 15, player.y + 50, 20, 30); // Body
+            
+            ctx.restore();
+        }
+        
+        function drawObstacles() {
+            obstacles.forEach(obstacle => {
+                ctx.save();
+                ctx.fillStyle = obstacle.color;
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = 10;
+                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+                
+                // Draw obstacle details
+                ctx.fillStyle = '#CC0000';
+                ctx.fillRect(obstacle.x + 5, obstacle.y + 5, obstacle.width - 10, obstacle.height - 10);
+                ctx.restore();
+            });
+        }
+        
+        function drawTracks() {
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([20, 20]);
+            
+            // Draw lane dividers
+            trackLines.forEach(line => {
+                ctx.globalAlpha = line.opacity;
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 4, line.y);
+                ctx.lineTo(canvas.width / 4, line.y + 20);
+                ctx.moveTo(canvas.width / 2, line.y);
+                ctx.lineTo(canvas.width / 2, line.y + 20);
+                ctx.moveTo((canvas.width * 3) / 4, line.y);
+                ctx.lineTo((canvas.width * 3) / 4, line.y + 20);
+                ctx.stroke();
+            });
+            
+            ctx.globalAlpha = 1;
+            ctx.setLineDash([]);
+        }
+        
+        function draw() {
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background gradient effect
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, 'rgba(135, 206, 235, 0.3)');
+            gradient.addColorStop(1, 'rgba(152, 216, 200, 0.3)');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw tracks
+            drawTracks();
+            
+            // Draw obstacles
+            drawObstacles();
+            
+            // Draw player
+            drawPlayer();
+        }
+        
+        // Game loop
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Restart game
+        restartBtn.addEventListener('click', () => {
+            gameRunning = true;
+            score = 0;
+            gameSpeed = 2;
+            obstacleSpawnInterval = 2000;
+            lastObstacleTime = Date.now();
+            player.lane = 1;
+            player.x = canvas.width / 2 - 25;
+            player.targetX = lanes[1];
+            obstacles = [];
+            gameOverElement.style.display = 'none';
+        });
+        
+        // Initialize leaderboard display
+        displayLeaderboard();
+        
+        // Start game loop (game won't run until name is entered)
+        lastObstacleTime = Date.now();
+        gameLoop();
+    </script>
+</body>
+</html>
