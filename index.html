@@ -161,6 +161,23 @@
             padding-bottom: 10px;
         }
         
+        #clearLeaderboardBtn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        #clearLeaderboardBtn:hover {
+            background: #ff5252;
+        }
+        
         .leaderboard-entry {
             padding: 10px;
             margin: 5px 0;
@@ -214,6 +231,7 @@
     <div id="leaderboard">
         <h3>🏆 Leaderboard</h3>
         <div id="leaderboardList"></div>
+        <button id="clearLeaderboardBtn">Clear Leaderboard</button>
     </div>
     
     <div id="gameContainer">
@@ -243,6 +261,7 @@
         const startGameBtn = document.getElementById('startGameBtn');
         const playerNameDisplay = document.getElementById('playerName');
         const leaderboardList = document.getElementById('leaderboardList');
+        const clearLeaderboardBtn = document.getElementById('clearLeaderboardBtn');
         
         // Player name
         let playerName = '';
@@ -259,12 +278,33 @@
         
         function addScore(name, score) {
             const leaderboard = getLeaderboard();
-            leaderboard.push({ name: name, score: score, date: new Date().toISOString() });
+            
+            // Check if player with same name already exists
+            const existingIndex = leaderboard.findIndex(entry => entry.name.toLowerCase() === name.toLowerCase());
+            
+            if (existingIndex !== -1) {
+                // Update existing entry if new score is higher, or always update to latest score
+                if (score > leaderboard[existingIndex].score) {
+                    leaderboard[existingIndex].score = score;
+                    leaderboard[existingIndex].date = new Date().toISOString();
+                }
+            } else {
+                // Add new entry
+                leaderboard.push({ name: name, score: score, date: new Date().toISOString() });
+            }
+            
             // Sort by score (descending) and keep top 10
             leaderboard.sort((a, b) => b.score - a.score);
             const topScores = leaderboard.slice(0, 10);
             saveLeaderboard(topScores);
             return topScores;
+        }
+        
+        function clearLeaderboard() {
+            if (confirm('Are you sure you want to clear the leaderboard? This cannot be undone.')) {
+                saveLeaderboard([]);
+                displayLeaderboard();
+            }
         }
         
         function displayLeaderboard() {
@@ -312,6 +352,9 @@
                 startGameBtn.click();
             }
         });
+        
+        // Clear leaderboard button
+        clearLeaderboardBtn.addEventListener('click', clearLeaderboard);
         
         // Initialize - don't start game until name is entered
         let gameRunning = false;
