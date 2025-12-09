@@ -1,349 +1,1247 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers - Simple Game</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Arial', sans-serif;
-        }
-        
-        #gameContainer {
-            text-align: center;
-        }
-        
-        canvas {
-            border: 3px solid #fff;
-            border-radius: 10px;
-            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #98D8C8 100%);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        #gameInfo {
-            margin-top: 20px;
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-        }
-        
-        #instructions {
-            margin-top: 10px;
-            color: white;
-            font-size: 16px;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-        }
-        
-        #gameOver {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            display: none;
-            z-index: 100;
-        }
-        
-        #gameOver h2 {
-            font-size: 48px;
-            margin-bottom: 20px;
-            color: #ff6b6b;
-        }
-        
-        #gameOver p {
-            font-size: 24px;
-            margin-bottom: 30px;
-        }
-        
-        #restartBtn {
-            background: #4ecdc4;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        
-        #restartBtn:hover {
-            background: #45b8b0;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Website cu taburi — Produse & Coș</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+  
+  :root{
+    --bg: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    --bg-solid: #f5f5f5;
+    --dark: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    --dark-solid: #1a1a2e;
+    --accent: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --accent-solid: #667eea;
+    --green: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --green-solid: #28a745;
+    --shadow: 0 10px 30px rgba(0,0,0,0.2);
+    --shadow-hover: 0 15px 40px rgba(0,0,0,0.3);
+  }
+  
+  * {
+    box-sizing: border-box;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  body{
+    font-family: 'Poppins', Inter, Arial, sans-serif;
+    margin:0;
+    padding: 0;
+    background: var(--bg);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    color:#111;
+    min-height: 100vh;
+    overflow-x: hidden;
+    width: 100%;
+  }
+  
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  .tabs{
+    display:flex;
+    background: var(--dark);
+    color:#fff;
+    align-items:center;
+    justify-content:space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  
+  .tab{
+    flex:1;
+    padding:16px 12px;
+    text-align:center;
+    cursor:pointer;
+    font-weight: 500;
+    font-size: 15px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .tab::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    transition: width 0.3s ease;
+  }
+  
+  .tab:hover::before {
+    width: 60%;
+  }
+  
+  .tab.active{
+    background: rgba(255,255,255,0.1);
+    font-weight: 600;
+  }
+  
+  .tab.active::before {
+    width: 80%;
+  }
+  
+  .login-btn{
+    padding:10px 16px;
+    font-size:14px;
+    background: var(--accent);
+    border:0;
+    border-radius:12px;
+    color:#fff;
+    cursor:pointer;
+    margin-right:12px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .login-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+  
+  .login-btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+  
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+  }
+  
+  .tab-content{
+    display:none;
+    padding:24px;
+    animation: fadeIn 0.4s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .tab-content.active{
+    display:block !important;
+  }
+  
+  .products{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .product-card{
+    width:180px;
+    min-width: 140px;
+    background:#fff;
+    border-radius:16px;
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    text-align:center;
+    padding:0;
+    position:relative;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    flex-shrink: 0;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-hover);
+    border-color: rgba(102,126,234,0.3);
+  }
+  
+  .product-card img{
+    width:100%;
+    height:140px;
+    object-fit:cover;
+    display: block;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .product-card img:hover {
+    transform: scale(1.05);
+  }
+  
+  /* Image Modal/Lightbox */
+  .image-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .image-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .image-modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: zoomIn 0.3s ease;
+    cursor: default;
+  }
+  
+  @keyframes zoomIn {
+    from {
+      transform: scale(0.8);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  .image-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #fff;
+    font-size: 40px;
+    font-weight: 300;
+    cursor: pointer;
+    z-index: 2001;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+  }
+  
+  .image-modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg) scale(1.1);
+  }
+  
+  /* Allergens Modal */
+  .alergeni-modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .alergeni-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .alergeni-modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    animation: zoomIn 0.3s ease;
+    cursor: default;
+    position: relative;
+  }
+  
+  .alergeni-modal-content h3 {
+    margin: 0 0 20px 0;
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    text-align: center;
+  }
+  
+  .alergeni-modal-content p {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+    text-align: center;
+  }
+  
+  .alergeni-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #666;
+    font-size: 32px;
+    font-weight: 300;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+  
+  .alergeni-modal-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: rotate(90deg) scale(1.1);
+    color: #333;
+  }
+  
+  @media (max-width: 768px) {
+    .image-modal-content {
+      max-width: 95%;
+      max-height: 85%;
+    }
+    
+    .image-modal-close {
+      top: 10px;
+      right: 15px;
+      font-size: 32px;
+      width: 40px;
+      height: 40px;
+    }
+  }
+  
+  .product-card .name{
+    margin:12px 12px 8px;
+    font-weight:600;
+    font-size:15px;
+    min-height:40px;
+    color: #333;
+    line-height: 1.4;
+  }
+  
+  .product-card .price{
+    font-size:16px;
+    color: #667eea;
+    margin:4px 12px;
+    font-weight: 700;
+  }
+  
+  .product-card .stoc{
+    font-size:13px;
+    color:#888;
+    margin:4px 12px 12px;
+    font-weight: 500;
+  }
+  
+  .product-card .actions{
+    margin:0 12px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .btn{
+    border:0;
+    padding:10px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  
+  .alergeni-btn{
+    background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+    color:#fff;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(255,152,0,0.3);
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+  
+  .alergeni-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,152,0,0.5);
+  }
+  
+  .add-btn{
+    background: var(--green);
+    color:#fff;
+    width: 100%;
+    box-shadow: 0 4px 15px rgba(17,153,142,0.3);
+  }
+  
+  .add-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(17,153,142,0.5);
+  }
+  
+  .add-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .delete-btn{
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color:#fff;
+    position:absolute;
+    top:8px;
+    right:8px;
+    font-size:14px;
+    padding:6px 10px;
+    border-radius:8px;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(255,65,108,0.4);
+    z-index: 10;
+  }
+  
+  .delete-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 15px rgba(255,65,108,0.6);
+  }
+  
+  #add-product-btn{
+    position:fixed;
+    right:24px;
+    bottom:24px;
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    font-size:32px;
+    background: var(--accent);
+    color:#fff;
+    border:0;
+    cursor:pointer;
+    box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+    display:none;
+    font-weight: 300;
+    z-index: 1000;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+    }
+    50% {
+      box-shadow: 0 8px 35px rgba(102,126,234,0.8), 0 0 0 10px rgba(102,126,234,0.1);
+    }
+  }
+  
+  #add-product-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 12px 35px rgba(102,126,234,0.7);
+  }
+  
+  /* cart */
+  .cart-item{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    background:#fff;
+    padding:16px;
+    border-radius:12px;
+    margin-bottom:12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.08);
+    transition: all 0.3s ease;
+  }
+  
+  .cart-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.12);
+  }
+  
+  .cart-item img{
+    width:72px;
+    height:72px;
+    object-fit:cover;
+    border-radius:10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.1);
+  }
+  
+  .cart-item .nm{
+    flex:1;
+    font-weight:600;
+    font-size: 15px;
+    color: #333;
+  }
+  
+  .cart-item .price{
+    margin-left:8px;
+    font-size:16px;
+    color:#667eea;
+    font-weight: 700;
+  }
+  
+  .cart-item button {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: #fff;
+    border: 0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(255,65,108,0.3);
+  }
+  
+  .cart-item button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 15px rgba(255,65,108,0.5);
+  }
+  
+  .cart-bottom{
+    display:flex;
+    gap:12px;
+    margin-top:20px;
+    align-items:center;
+    flex-wrap:wrap;
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+  }
+  
+  .cart-total{
+    font-weight:700;
+    margin-top:16px;
+    font-size: 24px;
+    color: #667eea;
+    background: #fff;
+    padding: 16px 20px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  
+  /* Donations */
+  .donations-section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .donations-section h3 {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+  }
+  
+  .donation-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .donation-btn {
+    padding: 12px 24px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    background: #fff;
+    color: #667eea;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 80px;
+  }
+  
+  .donation-btn:hover {
+    border-color: #667eea;
+    background: rgba(102,126,234,0.1);
+    transform: translateY(-2px);
+  }
+  
+  .donation-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+  }
+  
+  .donation-btn.active:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+  }
+  
+  @media (max-width: 520px) {
+    .donation-buttons {
+      gap: 8px;
+    }
+    .donation-btn {
+      flex: 1;
+      min-width: 0;
+      padding: 10px 16px;
+      font-size: 14px;
+    }
+  }
+  
+  input[type=text], input[type=email]{
+    flex:1;
+    padding:12px 16px;
+    border-radius:12px;
+    border:2px solid #e0e0e0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  
+  input[type=text]:focus, input[type=email]:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+    transform: translateY(-2px);
+  }
+  
+  button.send-btn{
+    background: var(--accent);
+    color:#fff;
+    padding:12px 24px;
+    border-radius:12px;
+    border:0;
+    cursor:pointer;
+    font-weight: 600;
+    font-size: 15px;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+  }
+  
+  button.send-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+  }
+  
+  /* messages list */
+  .message-card{
+    background:#fff;
+    padding:20px;
+    border-radius:16px;
+    margin-bottom:16px;
+    box-shadow: var(--shadow);
+    position:relative;
+    transition: all 0.3s ease;
+    border-left: 4px solid #667eea;
+  }
+  
+  .message-card:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow-hover);
+  }
+  
+  .msg-meta{
+    font-size:14px;
+    color:#666;
+    margin-bottom:12px;
+    font-weight: 500;
+  }
+  
+  .msg-meta b {
+    color: #333;
+    font-size: 16px;
+  }
+  
+  .msg-items{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom: 12px;
+  }
+  
+  .msg-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding:10px 14px;
+    border-radius:10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  }
+  
+  .msg-item img{
+    width:48px;
+    height:48px;
+    object-fit:cover;
+    border-radius:8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+  }
+  
+  .msg-item span {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .finished-badge{
+    position:absolute;
+    top:12px;
+    right:12px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color:#fff;
+    font-size:12px;
+    padding:6px 12px;
+    border-radius:20px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(17,153,142,0.3);
+  }
+  
+  .message-card button {
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+    margin-top: 12px;
+  }
+  
+  .message-card button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+  }
+  
+  .message-card button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+  
+  @media (max-width:768px){
+    body {
+      overflow-x: hidden;
+    }
+    .products{
+      justify-content:center;
+      gap: 12px;
+      padding: 0;
+    }
+    .product-card{
+      width:calc(50% - 6px);
+      min-width: 0;
+      max-width: 180px;
+      flex: 0 0 auto;
+    }
+    .tab-content {
+      padding: 16px;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+  }
+  
+  @media (max-width:520px){
+    .products{
+      justify-content:center;
+      gap: 10px;
+    }
+    .product-card{
+      width:calc(50% - 5px);
+      min-width: 0;
+    }
+    .product-card .name {
+      font-size: 13px;
+      min-height: 36px;
+    }
+    .product-card .price {
+      font-size: 14px;
+    }
+    .tabs {
+      flex-wrap: wrap;
+    }
+    .tab {
+      flex: 1 1 33.333%;
+      padding: 12px 8px;
+      font-size: 13px;
+    }
+    .login-btn {
+      width: calc(100% - 16px);
+      margin: 8px;
+      border-radius: 8px;
+    }
+    #add-product-btn {
+      width: 56px;
+      height: 56px;
+      font-size: 28px;
+      right: 16px;
+      bottom: 16px;
+    }
+    .cart-bottom {
+      flex-direction: column;
+    }
+    input[type=text], input[type=email] {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    button.send-btn {
+      width: 100%;
+    }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<script>
+  emailjs.init("GvGrLGbRmeJHP90mk");
+ // replace with your EmailJS public key
+</script>
 </head>
 <body>
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="600" height="800"></canvas>
-        <div id="gameInfo">
-            <div>Score: <span id="score">0</span></div>
-            <div id="instructions">Use ← → Arrow Keys to Move</div>
-        </div>
+
+<!-- Tabs -->
+<div class="tabs" id="tabsBar">
+  <div class="tab active" data-tab="produse">Produse</div>
+  <div class="tab" data-tab="cos">Coș</div>
+  <div class="tab" data-tab="mesaje" style="display:none;">Mesaje</div>
+  <button class="login-btn" id="login-btn">Login (Admin)</button>
+</div>
+
+<!-- PRODUSE -->
+<div id="produse" class="tab-content active">
+  <div style="margin-bottom:20px;color:#fff;font-size:16px;font-weight:500;text-shadow:0 2px 4px rgba(0,0,0,0.2);padding:16px;background:rgba(255,255,255,0.1);border-radius:12px;backdrop-filter:blur(10px);">📦 Lista de produse — apasă + pentru a adăuga unul nou (nume + link imagine + preț + stoc)</div>
+  <div style="margin-bottom:20px;color:#fff;font-size:14px;font-weight:400;text-shadow:0 2px 4px rgba(0,0,0,0.2);padding:14px 16px;background:rgba(255,215,0,0.15);border-left:4px solid #FFD700;border-radius:8px;backdrop-filter:blur(10px);">⚠️ NU avem grijă de plați aici. Acest website este doar o expunere a produselor</div>
+  <div class="products" id="products-container"></div>
+</div>
+
+<!-- COS -->
+<div id="cos" class="tab-content">
+  <div style="margin-bottom:20px;color:#fff;font-size:16px;font-weight:500;text-shadow:0 2px 4px rgba(0,0,0,0.2);padding:16px;background:rgba(255,255,255,0.1);border-radius:12px;backdrop-filter:blur(10px);">🛒 Coșul tău de cumpărături</div>
+  <div id="cart-container"><div style="color:#fff;text-align:center;padding:40px;font-size:18px;opacity:0.8;">Coșul este gol.</div></div>
+  <div class="donations-section" id="donations-section" style="display:none;">
+    <h3>💝 Donații</h3>
+    <div class="donation-buttons">
+      <button class="donation-btn" data-amount="5">5 RON</button>
+      <button class="donation-btn" data-amount="10">10 RON</button>
+      <button class="donation-btn" data-amount="20">20 RON</button>
     </div>
+  </div>
+  <div class="cart-bottom">
+    <input id="user-name" type="text" placeholder="Numele tău">
+    <input id="user-email" type="email" placeholder="Adresa ta de email">
+    <button class="send-btn" id="submit-order">Trimite comanda</button>
+  </div>
+  <div class="cart-total" id="cart-total"></div>
+</div>
+
+<!-- MESAGE -->
+<div id="mesaje" class="tab-content">
+  <div style="margin-bottom:20px;color:#fff;font-size:16px;font-weight:500;text-shadow:0 2px 4px rgba(0,0,0,0.2);padding:16px;background:rgba(255,255,255,0.1);border-radius:12px;backdrop-filter:blur(10px);">📬 Toate comenzile primite (live)</div>
+  <div id="messages-list"><div style="color:#fff;text-align:center;padding:40px;font-size:18px;opacity:0.8;">Nu există comenzi încă.</div></div>
+</div>
+
+<!-- Floating add product button -->
+<button id="add-product-btn" title="Adaugă produs">+</button>
+
+<!-- Image Modal/Lightbox -->
+<div class="image-modal" id="imageModal">
+  <span class="image-modal-close" id="closeModal">&times;</span>
+  <img class="image-modal-content" id="modalImage" src="" alt="Expanded product image">
+</div>
+
+<!-- Allergens Modal -->
+<div class="alergeni-modal" id="alergeniModal">
+  <div class="alergeni-modal-content">
+    <span class="alergeni-modal-close" id="closeAlergeniModal">&times;</span>
+    <h3>⚠️ Alergeni</h3>
+    <p id="alergeniText"></p>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, updateDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCY059AnI44qLOqdkvYy02Yk3L2QPNtzNk",
+  authDomain: "magazun-fa436.firebaseapp.com",
+  projectId: "magazun-fa436",
+  storageBucket: "magazun-fa436.appspot.com",
+  messagingSenderId: "474271636665",
+  appId: "1:474271636665:web:b5018c0ec964f029014f68"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let products = [];
+let cart = [];
+let isAdmin = false;
+let selectedDonation = 0;
+
+/* Tabs */
+document.getElementById('tabsBar').addEventListener('click', (ev) => {
+  const tabEl = ev.target.closest('.tab');
+  if(!tabEl) return;
+  const tabId = tabEl.dataset.tab;
+  if(!tabId) return;
+  
+  // Remove active class from all tabs and content
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => {
+    c.classList.remove('active');
+    c.style.display = 'none';
+  });
+  
+  // Add active class to clicked tab
+  tabEl.classList.add('active');
+  
+  // Show and activate the corresponding content
+  const contentEl = document.getElementById(tabId);
+  if(contentEl) {
+    contentEl.style.display = 'block';
+    contentEl.classList.add('active');
+  }
+});
+
+/* Simple admin login */
+document.getElementById('login-btn').addEventListener('click', ()=>{
+  const user = prompt("Username:");
+  const pass = prompt("Parolă:");
+  if(user==="Vasilealexjonny" && pass==="02050103"){
+    isAdmin = true;
+    document.querySelector('.tab[data-tab="mesaje"]').style.display="block";
+    document.getElementById('add-product-btn').style.display="block";
+    // Refresh orders display immediately when admin logs in
+    if(lastOrdersSnapshot) {
+      renderOrders(lastOrdersSnapshot);
+    }
+    alert("Autentificare reușită ca admin!");
+  } else alert("Date incorecte!");
+});
+
+/* Products */
+const productsCol = collection(db,"products");
+const productsQuery = query(productsCol, orderBy("createdAt","desc"));
+onSnapshot(productsQuery, snap => {
+  products=[];
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    products.push({id:docSnap.id,name:d.name,img:d.img,price:d.price,stock:d.stock,alergeni:d.alergeni||''});
+  });
+  renderProducts();
+});
+
+function renderProducts(){
+  const c=document.getElementById('products-container');
+  c.innerHTML='';
+  if(products.length===0){c.innerHTML='<div style="color:#fff;text-align:center;padding:40px;font-size:18px;opacity:0.8;width:100%;">Nu există produse încă.</div>';return;}
+  products.forEach((p,idx)=>{
+    const card=document.createElement('div');
+    card.className='product-card';
+    card.innerHTML=`
+      <img src="${p.img}" alt="${p.name}" data-img="${p.img}" />
+      <div class="name">${p.name}</div>
+      <div class="price">Preț: ${p.price} RON</div>
+      <div class="stoc">Stoc: ${p.stock ?? 0}</div>
+      <div class="actions">
+        <button class="btn add-btn" data-index="${idx}" ${p.stock<=0?'disabled':''}>Adaugă la coș</button>
+        ${p.alergeni ? `<button class="btn alergeni-btn" data-alergeni="${p.alergeni.replace(/"/g, '&quot;')}">⚠️ Alergeni</button>` : ''}
+      </div>
+    `;
+    if(isAdmin){
+      const delBtn=document.createElement('button');
+      delBtn.className='delete-btn'; delBtn.textContent='✕';
+      delBtn.onclick=async()=>await deleteDoc(doc(db,"products",p.id));
+      card.appendChild(delBtn);
+    }
+    c.appendChild(card);
+  });
+  c.querySelectorAll('.add-btn').forEach(b=>b.onclick=()=>addToCart(Number(b.dataset.index)));
+  // Add click handlers to alergeni buttons
+  c.querySelectorAll('.alergeni-btn').forEach(b=>{
+    b.onclick=(e)=>{
+      e.stopPropagation();
+      openAlergeniModal(b.dataset.alergeni);
+    };
+  });
+  // Add click handlers to product images
+  c.querySelectorAll('.product-card img').forEach(img=>{
+    img.onclick=(e)=>{
+      e.stopPropagation();
+      openImageModal(img.dataset.img);
+    };
+  });
+}
+
+/* Add product (admin only) */
+document.getElementById('add-product-btn').onclick=async()=>{
+  const name=prompt("Nume produs:"); if(!name) return;
+  const img=prompt("Link imagine (Imgur recomandat):"); if(!img) return;
+  const price=prompt("Preț (RON):"); if(!price||isNaN(price)) return alert("Preț invalid!");
+  const stock=parseInt(prompt("Stoc disponibil:"),10)||0;
+  const alergeni=prompt("Alergeni (lasă gol dacă nu există):")||'';
+  await addDoc(productsCol,{name,img,price:parseFloat(price).toFixed(2),stock,alergeni,createdAt:serverTimestamp()});
+};
+
+/* Cart logic */
+function addToCart(i){
+  const p=products[i];
+  if(p.stock<=0){alert("Stoc epuizat!");return;}
+  cart.push(p);
+  updateDoc(doc(db,"products",p.id),{stock:p.stock-1});
+  renderCart();
+}
+
+function renderCart(){
+  const c=document.getElementById('cart-container');
+  const donationsSection = document.getElementById('donations-section');
+  c.innerHTML='';
+  if(cart.length===0){
+    c.innerHTML='<div style="color:#fff;text-align:center;padding:40px;font-size:18px;opacity:0.8;">🛒 Coșul este gol.</div>';
+    document.getElementById('cart-total').textContent='';
+    donationsSection.style.display='none';
+    selectedDonation = 0;
+    updateDonationButtons();
+    return;
+  }
+  
+  // Show donations section when cart has items
+  donationsSection.style.display='block';
+  
+  let total=0;
+  cart.forEach((item,idx)=>{
+    total+=parseFloat(item.price);
+    const el=document.createElement('div');
+    el.className='cart-item';
+    el.innerHTML=`<img src="${item.img}" data-img="${item.img}" style="cursor:pointer;"/><div class="nm">${item.name}</div><div class="price">${item.price} RON</div><button class="btn" data-idx="${idx}">✕</button>`;
+    c.appendChild(el);
+  });
+  
+  // Add donation to total
+  total += selectedDonation;
+  
+  // Update total display
+  let totalText = `Total: ${total.toFixed(2)} RON`;
+  if(selectedDonation > 0) {
+    totalText = `Subtotal: ${(total - selectedDonation).toFixed(2)} RON<br>Donație: ${selectedDonation.toFixed(2)} RON<br><strong>Total: ${total.toFixed(2)} RON</strong>`;
+  }
+  document.getElementById('cart-total').innerHTML = totalText;
+  
+  c.querySelectorAll('button[data-idx]').forEach(b=>b.onclick=()=>{cart.splice(Number(b.dataset.idx),1);renderCart();});
+  // Add click handlers to cart item images
+  c.querySelectorAll('.cart-item img').forEach(img=>{
+    img.onclick=(e)=>{
+      e.stopPropagation();
+      openImageModal(img.dataset.img);
+    };
+  });
+}
+
+function updateDonationButtons() {
+  document.querySelectorAll('.donation-btn').forEach(btn => {
+    const amount = parseFloat(btn.dataset.amount);
+    if(amount === selectedDonation) {
+      btn.classList.add('active');
+    } else {
+      btn.classList.remove('active');
+    }
+  });
+}
+
+// Donation button handlers - use event delegation
+document.addEventListener('click', (e) => {
+  if(e.target.classList.contains('donation-btn')) {
+    const btn = e.target;
+    const amount = parseFloat(btn.dataset.amount);
+    if(selectedDonation === amount) {
+      // Deselect if clicking the same button
+      selectedDonation = 0;
+    } else {
+      selectedDonation = amount;
+    }
+    updateDonationButtons();
+    renderCart();
+  }
+});
+
+/* Submit order */
+document.getElementById('submit-order').onclick=async()=>{
+  const name=document.getElementById('user-name').value.trim();
+  const email=document.getElementById('user-email').value.trim();
+  if(!name||!email){alert("Completează numele și emailul!");return;}
+  if(cart.length===0){alert("Coșul e gol!");return;}
+
+  const subtotal=cart.reduce((s,i)=>s+parseFloat(i.price),0);
+  const total = subtotal + selectedDonation;
+  
+  let receipt = `Comandă de la ${name}\n------------------------\n${cart.map(i=>`• ${i.name} — ${i.price} RON`).join('\n')}\n------------------------\n`;
+  if(selectedDonation > 0) {
+    receipt += `Subtotal: ${subtotal.toFixed(2)} RON\nDonație: ${selectedDonation.toFixed(2)} RON\n`;
+  }
+  receipt += `Total: ${total.toFixed(2)} RON`;
+
+  await addDoc(collection(db,"orders"),{
+    name,email,items:cart.map(i=>({name:i.name,img:i.img,price:i.price})),
+    donation: selectedDonation,
+    subtotal: subtotal,
+    total: total,
+    createdAt:serverTimestamp(),finished:false
+  });
+
+  // send via EmailJS
+  emailjs.send("service_n4f4quf","template_uecxfb8",{email,name,message:receipt})
+  .then(()=>alert("Comanda a fost trimisă și pe email!"))
+  .catch(err=>{console.error(err);alert("Comanda salvată, dar emailul nu a putut fi trimis.");});
+
+  cart=[];selectedDonation=0;renderCart();document.getElementById('user-name').value='';document.getElementById('user-email').value='';
+};
+
+/* Image Modal functionality */
+const imageModal = document.getElementById('imageModal');
+const modalImage = document.getElementById('modalImage');
+const closeModal = document.getElementById('closeModal');
+
+function openImageModal(imgSrc) {
+  modalImage.src = imgSrc;
+  imageModal.classList.add('active');
+  document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function closeImageModal() {
+  imageModal.classList.remove('active');
+  document.body.style.overflow = ''; // Restore scrolling
+}
+
+closeModal.onclick = (e) => {
+  e.stopPropagation();
+  closeImageModal();
+};
+
+imageModal.onclick = (e) => {
+  if (e.target === imageModal) {
+    closeImageModal();
+  }
+};
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && imageModal.classList.contains('active')) {
+    closeImageModal();
+  }
+  if (e.key === 'Escape' && alergeniModal.classList.contains('active')) {
+    closeAlergeniModal();
+  }
+});
+
+/* Allergens Modal functionality */
+const alergeniModal = document.getElementById('alergeniModal');
+const alergeniText = document.getElementById('alergeniText');
+const closeAlergeniModalBtn = document.getElementById('closeAlergeniModal');
+
+function openAlergeniModal(alergeni) {
+  alergeniText.textContent = alergeni || 'Nu sunt alergeni specificați pentru acest produs.';
+  alergeniModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAlergeniModal() {
+  alergeniModal.classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+closeAlergeniModalBtn.onclick = (e) => {
+  e.stopPropagation();
+  closeAlergeniModal();
+};
+
+alergeniModal.onclick = (e) => {
+  if (e.target === alergeniModal) {
+    closeAlergeniModal();
+  }
+};
+
+/* Orders / Mesaje tab */
+const ordersCol=collection(db,"orders");
+const ordersQuery=query(ordersCol,orderBy("createdAt","desc"));
+let lastOrdersSnapshot = null;
+
+function renderOrders(snap) {
+  if(!isAdmin) {
+    const cont=document.getElementById('messages-list');
+    cont.innerHTML='<div style="color:#fff;text-align:center;padding:40px;font-size:18px;opacity:0.8;">Trebuie să fii autentificat ca admin pentru a vedea comenzile.</div>';
+    return;
+  }
+  const cont=document.getElementById('messages-list');
+  cont.innerHTML='';
+  if(snap.empty){cont.innerHTML='<div style="color:#fff;text-align:center;padding:40px;font-size:18px;opacity:0.8;">Nu există comenzi încă.</div>';return;}
+  snap.forEach(docSnap=>{
+    const d=docSnap.data();
+    const card=document.createElement('div');card.className='message-card';if(d.finished)card.style.opacity='0.6';
+    let subtotal=0;let itemsHtml='';
+    if(d.items){d.items.forEach(it=>{subtotal+=parseFloat(it.price);itemsHtml+=`<div class="msg-item"><img src="${it.img}" data-img="${it.img}" style="cursor:pointer;"/><span>${it.name} - ${it.price} RON</span></div>`;});}
     
-    <div id="gameOver">
-        <h2>Game Over!</h2>
-        <p>Final Score: <span id="finalScore">0</span></p>
-        <button id="restartBtn">Play Again</button>
-    </div>
+    const donation = d.donation || 0;
+    const total = d.total || (subtotal + donation);
     
-    <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('score');
-        const gameOverElement = document.getElementById('gameOver');
-        const finalScoreElement = document.getElementById('finalScore');
-        const restartBtn = document.getElementById('restartBtn');
-        
-        // Game state
-        let gameRunning = true;
-        let score = 0;
-        let gameSpeed = 2;
-        let lastObstacleTime = 0;
-        let obstacleSpawnInterval = 2000; // Spawn obstacle every 2 seconds (in milliseconds)
-        
-        // Player
-        const player = {
-            x: canvas.width / 2 - 25,
-            y: canvas.height - 150,
-            width: 50,
-            height: 80,
-            lane: 1, // 0 = left, 1 = center, 2 = right
-            color: '#FFD700',
-            targetX: canvas.width / 2 - 25
-        };
-        
-        const lanes = [
-            canvas.width / 4 - 25,
-            canvas.width / 2 - 25,
-            (canvas.width * 3) / 4 - 25
-        ];
-        
-        // Obstacles
-        let obstacles = [];
-        const obstacleWidth = 50;
-        const obstacleHeight = 80;
-        
-        // Tracks
-        const trackLines = [];
-        for (let i = 0; i < 20; i++) {
-            trackLines.push({
-                y: i * 40,
-                opacity: 0.3
-            });
-        }
-        
-        // Input handling
-        const keys = {};
-        
-        document.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
-            
-            if (e.key === 'ArrowLeft' && player.lane > 0) {
-                player.lane--;
-                player.targetX = lanes[player.lane];
-            }
-            if (e.key === 'ArrowRight' && player.lane < 2) {
-                player.lane++;
-                player.targetX = lanes[player.lane];
-            }
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
-        
-        // Create obstacles
-        function createObstacle() {
-            const lane = Math.floor(Math.random() * 3);
-            obstacles.push({
-                x: lanes[lane],
-                y: -obstacleHeight,
-                width: obstacleWidth,
-                height: obstacleHeight,
-                lane: lane,
-                color: '#FF4444'
-            });
-        }
-        
-        // Collision detection
-        function checkCollision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width &&
-                   rect1.x + rect1.width > rect2.x &&
-                   rect1.y < rect2.y + rect2.height &&
-                   rect1.y + rect1.height > rect2.y;
-        }
-        
-        // Update game
-        function update() {
-            if (!gameRunning) return;
-            
-            // Update player position (smooth movement)
-            const dx = player.targetX - player.x;
-            player.x += dx * 0.15;
-            
-            // Update track lines
-            trackLines.forEach(line => {
-                line.y += gameSpeed;
-                if (line.y > canvas.height) {
-                    line.y = -40;
-                }
-            });
-            
-            // Update obstacles
-            obstacles.forEach(obstacle => {
-                obstacle.y += gameSpeed;
-            });
-            
-            // Remove off-screen obstacles
-            obstacles = obstacles.filter(obstacle => obstacle.y < canvas.height);
-            
-            // Create new obstacles with time-based spawning (much less frequent)
-            const currentTime = Date.now();
-            if (currentTime - lastObstacleTime > obstacleSpawnInterval) {
-                createObstacle();
-                lastObstacleTime = currentTime;
-            }
-            
-            // Check collisions
-            obstacles.forEach(obstacle => {
-                if (checkCollision(player, obstacle)) {
-                    gameRunning = false;
-                    finalScoreElement.textContent = score;
-                    gameOverElement.style.display = 'block';
-                }
-            });
-            
-            // Update score
-            score += 1;
-            scoreElement.textContent = Math.floor(score / 10);
-            
-            // Increase difficulty (slightly increase spawn rate over time)
-            if (score % 1000 === 0) {
-                gameSpeed += 0.1;
-                // Gradually decrease spawn interval (but not too much)
-                if (obstacleSpawnInterval > 1200) {
-                    obstacleSpawnInterval = Math.max(1200, obstacleSpawnInterval - 50);
-                }
-            }
-        }
-        
-        // Draw functions
-        function drawPlayer() {
-            ctx.save();
-            ctx.fillStyle = player.color;
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-            ctx.shadowBlur = 10;
-            
-            // Draw player body
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-            
-            // Draw player details
-            ctx.fillStyle = '#FFA500';
-            ctx.fillRect(player.x + 10, player.y + 10, 30, 20); // Head
-            
-            ctx.fillStyle = '#FF6347';
-            ctx.fillRect(player.x + 15, player.y + 50, 20, 30); // Body
-            
-            ctx.restore();
-        }
-        
-        function drawObstacles() {
-            obstacles.forEach(obstacle => {
-                ctx.save();
-                ctx.fillStyle = obstacle.color;
-                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                ctx.shadowBlur = 10;
-                ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-                
-                // Draw obstacle details
-                ctx.fillStyle = '#CC0000';
-                ctx.fillRect(obstacle.x + 5, obstacle.y + 5, obstacle.width - 10, obstacle.height - 10);
-                ctx.restore();
-            });
-        }
-        
-        function drawTracks() {
-            ctx.strokeStyle = '#FFFFFF';
-            ctx.lineWidth = 3;
-            ctx.setLineDash([20, 20]);
-            
-            // Draw lane dividers
-            trackLines.forEach(line => {
-                ctx.globalAlpha = line.opacity;
-                ctx.beginPath();
-                ctx.moveTo(canvas.width / 4, line.y);
-                ctx.lineTo(canvas.width / 4, line.y + 20);
-                ctx.moveTo(canvas.width / 2, line.y);
-                ctx.lineTo(canvas.width / 2, line.y + 20);
-                ctx.moveTo((canvas.width * 3) / 4, line.y);
-                ctx.lineTo((canvas.width * 3) / 4, line.y + 20);
-                ctx.stroke();
-            });
-            
-            ctx.globalAlpha = 1;
-            ctx.setLineDash([]);
-        }
-        
-        function draw() {
-            // Clear canvas
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw background gradient effect
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, 'rgba(135, 206, 235, 0.3)');
-            gradient.addColorStop(1, 'rgba(152, 216, 200, 0.3)');
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Draw tracks
-            drawTracks();
-            
-            // Draw obstacles
-            drawObstacles();
-            
-            // Draw player
-            drawPlayer();
-        }
-        
-        // Game loop
-        function gameLoop() {
-            update();
-            draw();
-            requestAnimationFrame(gameLoop);
-        }
-        
-        // Restart game
-        restartBtn.addEventListener('click', () => {
-            gameRunning = true;
-            score = 0;
-            gameSpeed = 2;
-            lastObstacleTime = Date.now();
-            player.lane = 1;
-            player.x = canvas.width / 2 - 25;
-            player.targetX = lanes[1];
-            obstacles = [];
-            gameOverElement.style.display = 'none';
-        });
-        
-        // Start game
-        lastObstacleTime = Date.now();
-        gameLoop();
-    </script>
+    let receipt = `Comandă de la ${d.name}\n------------------------\n${d.items.map(it=>`• ${it.name} — ${it.price} RON`).join('\n')}\n------------------------\n`;
+    if(donation > 0) {
+      receipt += `Subtotal: ${subtotal.toFixed(2)} RON\nDonație: ${donation.toFixed(2)} RON\n`;
+    }
+    receipt += `Total: ${total.toFixed(2)} RON`;
+
+    const copyBtn=document.createElement('button');copyBtn.textContent=d.finished?"✅ Copiat":"📋 Copiază comanda";copyBtn.className="btn";copyBtn.style.marginTop="8px";copyBtn.disabled=d.finished;
+    copyBtn.onclick=async()=>{await navigator.clipboard.writeText(receipt);await updateDoc(doc(db,"orders",docSnap.id),{finished:true});copyBtn.textContent="✅ Copiat!";card.style.opacity='0.6';};
+
+    if(d.finished){const badge=document.createElement('div');badge.className='finished-badge';badge.textContent='✔ Finished';card.appendChild(badge);}
+    
+    let totalDisplay = `Subtotal: ${subtotal.toFixed(2)} RON`;
+    if(donation > 0) {
+      totalDisplay += `<br>💝 Donație: ${donation.toFixed(2)} RON`;
+    }
+    totalDisplay += `<br><strong>Total: ${total.toFixed(2)} RON</strong>`;
+    
+    card.innerHTML+=`<div class="msg-meta"><b>${d.name}</b> (${d.email||"fără email"})</div><div class="msg-items">${itemsHtml}</div><div class="cart-total">${totalDisplay}</div>`;
+    card.appendChild(copyBtn);
+    cont.appendChild(card);
+    
+    // Add click handlers to message item images
+    card.querySelectorAll('.msg-item img').forEach(img=>{
+      img.onclick=(e)=>{
+        e.stopPropagation();
+        openImageModal(img.dataset.img);
+      };
+    });
+  });
+}
+
+onSnapshot(ordersQuery,snap=>{
+  lastOrdersSnapshot = snap;
+  renderOrders(snap);
+});
+</script>
 </body>
 </html>
+
